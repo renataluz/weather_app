@@ -46,3 +46,7 @@ app.*.map.json
 
 # Environment variables
 .env
+lib/env/env.g.dart
+
+# Personal study notes (not part of the deliverable)
+docs/DIARIO_DE_ESTUDOS.md
