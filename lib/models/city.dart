@@ -32,8 +32,11 @@ class City {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is City && name == other.name && country == other.country;
+      other is City &&
+          latitude.toStringAsFixed(2) == other.latitude.toStringAsFixed(2) &&
+          longitude.toStringAsFixed(2) == other.longitude.toStringAsFixed(2);
 
   @override
-  int get hashCode => Object.hash(name, country);
+  int get hashCode =>
+      Object.hash(latitude.toStringAsFixed(2), longitude.toStringAsFixed(2));
 }

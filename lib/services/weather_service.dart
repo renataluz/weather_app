@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../env/env.dart';
+import '../models/city.dart';
 import '../models/weather_data.dart';
 
 class WeatherApiException implements Exception {
@@ -32,6 +33,28 @@ class WeatherService {
 
     throw WeatherApiException(
       'Erro ao buscar clima (status ${response.statusCode})',
+    );
+  }
+
+  Future<City> findCity(String cityName) async {
+    final url = Uri.parse(
+      '$_baseUrl/search.json?key=${Env.weatherApiKey}&q=$cityName',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final results = jsonDecode(response.body) as List<dynamic>;
+
+      if (results.isEmpty) {
+        throw WeatherApiException('Cidade não encontrada: $cityName');
+      }
+
+      return City.fromJson(results.first as Map<String, dynamic>);
+    }
+
+    throw WeatherApiException(
+      'Erro ao buscar cidade (status ${response.statusCode})',
     );
   }
 }
