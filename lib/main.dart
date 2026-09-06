@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:weather_app/screens/home_screen.dart';
+import 'package:weather_app/screens/city_list_screen.dart';
+
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomeScreen(),
+      home: const CityListScreen(),
     );
   }
 }
