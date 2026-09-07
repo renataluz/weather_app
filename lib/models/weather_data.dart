@@ -13,6 +13,10 @@ class WeatherData {
     required this.windKph,
   });
 
+  String get displayTemperature => '${temperatureC.round()}°C';
+
+  String get displaySummary => 'Umidade: $humidity%  ·  Vento: $windKph km/h';
+
   factory WeatherData.fromJson(Map<String, dynamic> json) {
     final current = json['current'] as Map<String, dynamic>;
     final condition = current['condition'] as Map<String, dynamic>;

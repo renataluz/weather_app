@@ -15,6 +15,22 @@ class ForecastDay {
     required this.chanceOfRain,
   });
 
+  static const _weekdays = [
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado',
+    'Domingo',
+  ];
+
+  String get displayWeekday => _weekdays[date.weekday - 1];
+
+  String get displayRange => '${minTempC.round()}° / ${maxTempC.round()}°';
+
+  String get displaySubtitle => '$condition · chuva $chanceOfRain%';
+
   factory ForecastDay.fromJson(Map<String, dynamic> json) {
     final day = json['day'] as Map<String, dynamic>;
     final condition = day['condition'] as Map<String, dynamic>;

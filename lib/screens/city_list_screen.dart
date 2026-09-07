@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/city_list_provider.dart';
-import '../providers/weather_provider.dart';
+import '../view_models/city_list_view_model.dart';
 import 'city_detail_screen.dart';
+import '../view_models/weather_view_model.dart';
+import '../constants/app_strings.dart';
 
 class CityListScreen extends ConsumerWidget {
   const CityListScreen({super.key});
@@ -12,9 +13,9 @@ class CityListScreen extends ConsumerWidget {
     final cities = ref.watch(cityListProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Climinha')),
+      appBar: AppBar(title: const Text(AppStrings.appTitle)),
       body: cities.isEmpty
-          ? const Center(child: Text('Nenhuma cidade cadastrada ainda.'))
+          ? const Center(child: Text(AppStrings.emptyCityList))
           : ListView.builder(
               itemCount: cities.length,
               itemBuilder: (context, index) {
@@ -71,7 +72,7 @@ class _CityWeatherBadge extends ConsumerWidget {
         child: CircularProgressIndicator(strokeWidth: 2),
       ),
       error: (error, stackTrace) => const Icon(Icons.error_outline, size: 18),
-      data: (weather) => Text('${weather.temperatureC.round()}°C'),
+      data: (weather) => Text(weather.displayTemperature),
     );
   }
 }
@@ -98,17 +99,18 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
     });
 
     try {
-      final city = await ref.read(weatherServiceProvider).findCity(cityName);
-      final added = await ref.read(cityListProvider.notifier).addCity(city);
+      final result = await ref
+          .read(cityListProvider.notifier)
+          .addCityByName(cityName);
 
       if (!mounted) return;
 
-      if (added) {
+      if (result == AddCityResult.success) {
         Navigator.of(context).pop();
       } else {
         setState(() {
           _isLoading = false;
-          _errorText = 'Essa cidade já está cadastrada.';
+          _errorText = AppStrings.cityAlreadyRegistered;
         });
       }
     } catch (error) {
@@ -123,12 +125,12 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Adicionar cidade'),
+      title: const Text(AppStrings.addCityDialogTitle),
       content: TextField(
         controller: _controller,
         autofocus: true,
         decoration: InputDecoration(
-          hintText: 'Ex: São Paulo',
+          hintText: AppStrings.addCityHint,
           errorText: _errorText,
         ),
         onSubmitted: (_) => _submit(),
@@ -136,7 +138,7 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          child: const Text(AppStrings.cancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _submit,
@@ -146,7 +148,7 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Adicionar'),
+              : const Text(AppStrings.add),
         ),
       ],
     );
