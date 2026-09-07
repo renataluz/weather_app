@@ -1,12 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weather_app/models/city.dart';
-import 'package:weather_app/models/forecast_day.dart';
-import 'package:weather_app/models/history_day.dart';
-import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/repositories/weather_repository.dart';
-import 'package:weather_app/services/city_storage_service.dart';
-import 'package:weather_app/services/weather_service.dart';
 import 'package:weather_app/view_models/city_list_view_model.dart';
 
 import '../fakes/weather_fakes.dart';
