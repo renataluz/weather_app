@@ -93,7 +93,7 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
 
     try {
       final city = await ref.read(weatherServiceProvider).findCity(cityName);
-      final added = ref.read(cityListProvider.notifier).addCity(city);
+      final added = await ref.read(cityListProvider.notifier).addCity(city);
 
       if (!mounted) return;
 
