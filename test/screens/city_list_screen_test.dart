@@ -5,6 +5,7 @@ import 'package:weather_app/constants/app_strings.dart';
 import 'package:weather_app/models/city.dart';
 import 'package:weather_app/repositories/weather_repository.dart';
 import 'package:weather_app/screens/city_list_screen.dart';
+import 'package:weather_app/services/location_service.dart';
 import 'package:weather_app/view_models/city_list_view_model.dart';
 
 import '../fakes/weather_fakes.dart';
@@ -27,6 +28,7 @@ void main() {
         weatherRepositoryProvider.overrideWithValue(
           WeatherRepository(fakeService),
         ),
+        locationServiceProvider.overrideWithValue(FakeLocationService()),
       ],
       child: const MaterialApp(home: CityListScreen()),
     );

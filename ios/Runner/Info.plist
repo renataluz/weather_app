@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Usamos sua localização para sugerir automaticamente a cidade atual no Climinha.</string>
 </dict>
 </plist>
