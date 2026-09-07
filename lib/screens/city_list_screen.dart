@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/city_list_provider.dart';
 import '../providers/weather_provider.dart';
+import 'city_detail_screen.dart';
 
 class CityListScreen extends ConsumerWidget {
   const CityListScreen({super.key});
@@ -15,29 +16,34 @@ class CityListScreen extends ConsumerWidget {
       body: cities.isEmpty
           ? const Center(child: Text('Nenhuma cidade cadastrada ainda.'))
           : ListView.builder(
-        itemCount: cities.length,
-        itemBuilder: (context, index) {
-          final city = cities[index];
-          return Dismissible(
-            key: ValueKey('${city.name}-${city.country}'),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: const Icon(Icons.delete, color: Colors.white),
+              itemCount: cities.length,
+              itemBuilder: (context, index) {
+                final city = cities[index];
+                return Dismissible(
+                  key: ValueKey('${city.name}-${city.country}'),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (_) {
+                    ref.read(cityListProvider.notifier).removeCity(city);
+                  },
+                  child: ListTile(
+                    title: Text(city.name),
+                    subtitle: Text(city.country),
+                    trailing: _CityWeatherBadge(cityName: city.name),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CityDetailScreen(city: city),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            onDismissed: (_) {
-              ref.read(cityListProvider.notifier).removeCity(city);
-            },
-            child: ListTile(
-              title: Text(city.name),
-              subtitle: Text(city.country),
-              trailing: _CityWeatherBadge(cityName: city.name),
-            ),
-          );
-        },
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(
           context: context,
@@ -136,10 +142,10 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
           onPressed: _isLoading ? null : _submit,
           child: _isLoading
               ? const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text('Adicionar'),
         ),
       ],

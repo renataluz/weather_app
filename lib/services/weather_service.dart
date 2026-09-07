@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../env/env.dart';
 import '../models/city.dart';
+import '../models/forecast_day.dart';
 import '../models/weather_data.dart';
 
 class WeatherApiException implements Exception {
   final String message;
+
   WeatherApiException(this.message);
 
   @override
@@ -55,6 +57,32 @@ class WeatherService {
 
     throw WeatherApiException(
       'Erro ao buscar cidade (status ${response.statusCode})',
+    );
+  }
+
+  Future<List<ForecastDay>> getForecast(String cityName, {int days = 7}) async {
+    final url = Uri.parse(
+      '$_baseUrl/forecast.json?key=${Env.weatherApiKey}&q=$cityName&days=$days&lang=pt',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final forecast = json['forecast'] as Map<String, dynamic>;
+      final forecastDays = forecast['forecastday'] as List<dynamic>;
+
+      return forecastDays
+          .map((day) => ForecastDay.fromJson(day as Map<String, dynamic>))
+          .toList();
+    }
+
+    if (response.statusCode == 400) {
+      throw WeatherApiException('Cidade não encontrada: $cityName');
+    }
+
+    throw WeatherApiException(
+      'Erro ao buscar previsão (status ${response.statusCode})',
     );
   }
 }
