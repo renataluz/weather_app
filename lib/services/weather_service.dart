@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../constants/app_strings.dart';
 import '../env/env.dart';
 import '../models/city.dart';
 import '../models/forecast_day.dart';
@@ -31,11 +32,11 @@ class WeatherService {
     }
 
     if (response.statusCode == 400) {
-      throw WeatherApiException('Cidade não encontrada: $cityName');
+      throw WeatherApiException(AppStrings.cityNotFound(cityName));
     }
 
     throw WeatherApiException(
-      'Erro ao buscar clima (status ${response.statusCode})',
+      AppStrings.errorFetchingWeather(response.statusCode),
     );
   }
 
@@ -50,15 +51,13 @@ class WeatherService {
       final results = jsonDecode(response.body) as List<dynamic>;
 
       if (results.isEmpty) {
-        throw WeatherApiException('Cidade não encontrada: $cityName');
+        throw WeatherApiException(AppStrings.cityNotFound(cityName));
       }
 
       return City.fromJson(results.first as Map<String, dynamic>);
     }
 
-    throw WeatherApiException(
-      'Erro ao buscar cidade (status ${response.statusCode})',
-    );
+    throw WeatherApiException(AppStrings.errorFetchingCity(response.statusCode));
   }
 
   Future<List<ForecastDay>> getForecast(String cityName, {int days = 7}) async {
@@ -79,11 +78,11 @@ class WeatherService {
     }
 
     if (response.statusCode == 400) {
-      throw WeatherApiException('Cidade não encontrada: $cityName');
+      throw WeatherApiException(AppStrings.cityNotFound(cityName));
     }
 
     throw WeatherApiException(
-      'Erro ao buscar previsão (status ${response.statusCode})',
+      AppStrings.errorFetchingForecast(response.statusCode),
     );
   }
 
@@ -106,17 +105,15 @@ class WeatherService {
     }
 
     if (response.statusCode == 400) {
-      throw WeatherApiException('Cidade não encontrada: $cityName');
+      throw WeatherApiException(AppStrings.cityNotFound(cityName));
     }
 
     if (response.statusCode == 403) {
-      throw WeatherApiException(
-        'Histórico indisponível: esse recurso pode exigir um plano pago da WeatherAPI.',
-      );
+      throw WeatherApiException(AppStrings.historyRequiresPaidPlan);
     }
 
     throw WeatherApiException(
-      'Erro ao buscar histórico (status ${response.statusCode})',
+      AppStrings.errorFetchingHistory(response.statusCode),
     );
   }
 

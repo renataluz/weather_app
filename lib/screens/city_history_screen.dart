@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:weather_app/view_models/city_history_view_model.dart';
+import '../constants/app_strings.dart';
 import '../models/city.dart';
-import '../providers/weather_provider.dart';
 
 class CityHistoryScreen extends ConsumerWidget {
   const CityHistoryScreen({super.key, required this.city});
@@ -10,10 +11,10 @@ class CityHistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final historyAsync = ref.watch(historyProvider(city.name));
+    final historyAsync = ref.watch(cityHistoryProvider(city.name));
 
     return Scaffold(
-      appBar: AppBar(title: Text('Histórico · ${city.name}')),
+      appBar: AppBar(title: Text(AppStrings.historyTitle(city.name))),
       body: Center(
         child: historyAsync.when(
           loading: () => const CircularProgressIndicator(),
@@ -25,13 +26,13 @@ class CityHistoryScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _formatDisplayDate(history.date),
+                history.displayDate,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 16),
               Image.network(history.iconUrl, width: 64, height: 64),
               Text(
-                '${history.avgTempC.round()}°C',
+                history.displayTemperature,
                 style: const TextStyle(fontSize: 40),
               ),
               Text(history.condition),
@@ -40,11 +41,5 @@ class CityHistoryScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatDisplayDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    return '$day/$month/${date.year}';
   }
 }

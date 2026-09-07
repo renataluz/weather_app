@@ -11,6 +11,14 @@ class HistoryDay {
     required this.iconUrl,
   });
 
+  String get displayDate {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    return '$day/$month/${date.year}';
+  }
+
+  String get displayTemperature => '${avgTempC.round()}°C';
+
   factory HistoryDay.fromJson(Map<String, dynamic> json) {
     final day = json['day'] as Map<String, dynamic>;
     final condition = day['condition'] as Map<String, dynamic>;
