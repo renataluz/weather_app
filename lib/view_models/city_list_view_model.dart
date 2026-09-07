@@ -3,6 +3,7 @@ import 'package:weather_app/view_models/weather_view_model.dart';
 import '../models/city.dart';
 import '../repositories/weather_repository.dart';
 import '../services/city_storage_service.dart';
+import 'city_detail_view_model.dart';
 
 enum AddCityResult { success, duplicate }
 
@@ -42,9 +43,11 @@ class CityListViewModel extends StateNotifier<List<City>> {
   }
 
   Future<void> refreshWeather() async {
-    final refreshes = state.map(
-      (city) => _ref.refresh(weatherProvider(city.name).future),
-    );
+    final refreshes = state.map((city) {
+      _weatherRepository.invalidate(city.name);
+      _ref.invalidate(cityDetailProvider(city.name));
+      return _ref.refresh(weatherProvider(city.name).future);
+    });
     await Future.wait(refreshes);
   }
 }
