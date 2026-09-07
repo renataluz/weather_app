@@ -11,6 +11,8 @@ class City {
     required this.longitude,
   });
 
+  String get uniqueKey => '$name-$country';
+
   factory City.fromJson(Map<String, dynamic> json) {
     return City(
       name: json['name'] as String,

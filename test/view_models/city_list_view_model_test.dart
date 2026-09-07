@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weather_app/models/city.dart';
 import 'package:weather_app/models/forecast_day.dart';
@@ -52,11 +53,24 @@ void main() {
     longitude: -46.3339,
   );
 
-  test('addCityByName adiciona uma cidade nova com sucesso', () async {
+  late ProviderContainer container;
+
+  setUp(() {
     final fakeService = FakeWeatherService()..cityToReturn = santos;
-    final repository = WeatherRepository(fakeService);
-    final storage = FakeCityStorageService();
-    final viewModel = CityListViewModel(storage, repository);
+
+    container = ProviderContainer(
+      overrides: [
+        cityStorageServiceProvider.overrideWithValue(FakeCityStorageService()),
+        weatherRepositoryProvider.overrideWithValue(
+          WeatherRepository(fakeService),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+  });
+
+  test('addCityByName adiciona uma cidade nova com sucesso', () async {
+    final viewModel = container.read(cityListProvider.notifier);
 
     await Future<void>.delayed(Duration.zero);
 
@@ -67,10 +81,7 @@ void main() {
   });
 
   test('addCityByName recusa cidade duplicada', () async {
-    final fakeService = FakeWeatherService()..cityToReturn = santos;
-    final repository = WeatherRepository(fakeService);
-    final storage = FakeCityStorageService();
-    final viewModel = CityListViewModel(storage, repository);
+    final viewModel = container.read(cityListProvider.notifier);
 
     await Future<void>.delayed(Duration.zero);
 

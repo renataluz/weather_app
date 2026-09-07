@@ -14,37 +14,49 @@ class CityListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.appTitle)),
-      body: cities.isEmpty
-          ? const Center(child: Text(AppStrings.emptyCityList))
-          : ListView.builder(
-              itemCount: cities.length,
-              itemBuilder: (context, index) {
-                final city = cities[index];
-                return Dismissible(
-                  key: ValueKey('${city.name}-${city.country}'),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(cityListProvider.notifier).refreshWeather(),
+        child: cities.isEmpty
+            ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.only(top: 120),
+                    child: Center(child: Text(AppStrings.emptyCityList)),
                   ),
-                  onDismissed: (_) {
-                    ref.read(cityListProvider.notifier).removeCity(city);
-                  },
-                  child: ListTile(
-                    title: Text(city.name),
-                    subtitle: Text(city.country),
-                    trailing: _CityWeatherBadge(cityName: city.name),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => CityDetailScreen(city: city),
+                ],
+              )
+            : ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: cities.length,
+                itemBuilder: (context, index) {
+                  final city = cities[index];
+                  return Dismissible(
+                    key: ValueKey(city.uniqueKey),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    onDismissed: (_) {
+                      ref.read(cityListProvider.notifier).removeCity(city);
+                    },
+                    child: ListTile(
+                      title: Text(city.name),
+                      subtitle: Text(city.country),
+                      trailing: _CityWeatherBadge(cityName: city.name),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => CityDetailScreen(city: city),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(
           context: context,
@@ -91,7 +103,12 @@ class _AddCityDialogState extends ConsumerState<_AddCityDialog> {
 
   Future<void> _submit() async {
     final cityName = _controller.text.trim();
-    if (cityName.isEmpty) return;
+    if (cityName.isEmpty) {
+      setState(() {
+        _errorText = AppStrings.emptyCityName;
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;

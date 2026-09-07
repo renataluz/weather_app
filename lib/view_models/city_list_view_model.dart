@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:weather_app/view_models/weather_view_model.dart';
 import '../models/city.dart';
 import '../repositories/weather_repository.dart';
 import '../services/city_storage_service.dart';
@@ -10,12 +11,14 @@ final cityStorageServiceProvider = Provider<CityStorageService>((ref) {
 });
 
 class CityListViewModel extends StateNotifier<List<City>> {
-  CityListViewModel(this._storage, this._weatherRepository) : super([]) {
+  CityListViewModel(this._storage, this._weatherRepository, this._ref)
+    : super([]) {
     _loadCities();
   }
 
   final CityStorageService _storage;
   final WeatherRepository _weatherRepository;
+  final Ref _ref;
 
   Future<void> _loadCities() async {
     state = await _storage.loadCities();
@@ -37,6 +40,13 @@ class CityListViewModel extends StateNotifier<List<City>> {
     state = state.where((c) => c != city).toList();
     await _storage.saveCities(state);
   }
+
+  Future<void> refreshWeather() async {
+    final refreshes = state.map(
+      (city) => _ref.refresh(weatherProvider(city.name).future),
+    );
+    await Future.wait(refreshes);
+  }
 }
 
 final cityListProvider = StateNotifierProvider<CityListViewModel, List<City>>((
@@ -45,5 +55,6 @@ final cityListProvider = StateNotifierProvider<CityListViewModel, List<City>>((
   return CityListViewModel(
     ref.watch(cityStorageServiceProvider),
     ref.watch(weatherRepositoryProvider),
+    ref,
   );
 });

@@ -11,6 +11,7 @@ class AppStrings {
   static const historyTooltip = 'Histórico de 1 ano atrás';
   static const historyRequiresPaidPlan =
       'Histórico indisponível: esse recurso pode exigir um plano pago da WeatherAPI.';
+  static const emptyCityName = 'Digite o nome de uma cidade.';
 
   static String historyTitle(String cityName) => 'Histórico · $cityName';
   static String cityNotFound(String cityName) => 'Cidade não encontrada: $cityName';
