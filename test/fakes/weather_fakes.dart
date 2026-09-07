@@ -1,8 +1,10 @@
 import 'package:weather_app/models/city.dart';
+import 'package:weather_app/models/coordinates.dart';
 import 'package:weather_app/models/forecast_day.dart';
 import 'package:weather_app/models/history_day.dart';
 import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/services/city_storage_service.dart';
+import 'package:weather_app/services/location_service.dart';
 import 'package:weather_app/services/weather_service.dart';
 
 class FakeWeatherService implements WeatherService {
@@ -38,5 +40,12 @@ class FakeCityStorageService implements CityStorageService {
   @override
   Future<void> saveCities(List<City> newCities) async {
     cities = newCities;
+  }
+}
+
+class FakeLocationService implements LocationService {
+  @override
+  Future<Coordinates> getCurrentCoordinates() async {
+    throw LocationException('Localização não disponível no teste.');
   }
 }

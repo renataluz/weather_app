@@ -12,6 +12,16 @@ class AppStrings {
   static const historyRequiresPaidPlan =
       'Histórico indisponível: esse recurso pode exigir um plano pago da WeatherAPI.';
   static const emptyCityName = 'Digite o nome de uma cidade.';
+  static const useMyLocation = 'Usar minha localização';
+  static const locationServiceDisabled =
+      'Ative o serviço de localização do dispositivo para usar essa função.';
+  static const locationPermissionDenied = 'Permissão de localização negada.';
+  static const locationPermissionDeniedForever =
+      'Permissão de localização negada permanentemente. Habilite nas configurações do dispositivo.';
+  static const locatingMessage = 'Buscando sua localização...';
+  static const currentLocationLabel = 'Sua localização atual';
+  static const enableLocationPrompt = 'Toque para ver o clima da sua localização atual';
+  static const listHint = 'Toque em uma cidade para ver detalhes · arraste para remover';
 
   static String historyTitle(String cityName) => 'Histórico · $cityName';
   static String cityNotFound(String cityName) => 'Cidade não encontrada: $cityName';
