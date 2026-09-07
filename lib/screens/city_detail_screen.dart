@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/city.dart';
 import '../providers/weather_provider.dart';
+import 'city_history_screen.dart';
 
 class CityDetailScreen extends ConsumerWidget {
   const CityDetailScreen({super.key, required this.city});
@@ -14,7 +15,17 @@ class CityDetailScreen extends ConsumerWidget {
     final forecastAsync = ref.watch(forecastProvider(city.name));
 
     return Scaffold(
-      appBar: AppBar(title: Text(city.name)),
+      appBar: AppBar(
+        title: Text(city.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => CityHistoryScreen(city: city)),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           weatherAsync.when(

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../env/env.dart';
 import '../models/city.dart';
 import '../models/forecast_day.dart';
+import '../models/history_day.dart';
 import '../models/weather_data.dart';
 
 class WeatherApiException implements Exception {
@@ -84,5 +85,45 @@ class WeatherService {
     throw WeatherApiException(
       'Erro ao buscar previsão (status ${response.statusCode})',
     );
+  }
+
+  Future<HistoryDay> getHistoryOneYearAgo(String cityName) async {
+    final now = DateTime.now();
+    final oneYearAgo = DateTime(now.year - 1, now.month, now.day);
+    final dateParam = _formatDate(oneYearAgo);
+
+    final url = Uri.parse(
+      '$_baseUrl/history.json?key=${Env.weatherApiKey}&q=$cityName&dt=$dateParam&lang=pt',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final forecast = json['forecast'] as Map<String, dynamic>;
+      final forecastDays = forecast['forecastday'] as List<dynamic>;
+      return HistoryDay.fromJson(forecastDays.first as Map<String, dynamic>);
+    }
+
+    if (response.statusCode == 400) {
+      throw WeatherApiException('Cidade não encontrada: $cityName');
+    }
+
+    if (response.statusCode == 403) {
+      throw WeatherApiException(
+        'Histórico indisponível: esse recurso pode exigir um plano pago da WeatherAPI.',
+      );
+    }
+
+    throw WeatherApiException(
+      'Erro ao buscar histórico (status ${response.statusCode})',
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final year = date.year.toString().padLeft(4, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '$year-$month-$day';
   }
 }
