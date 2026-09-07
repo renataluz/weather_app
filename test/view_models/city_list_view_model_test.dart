@@ -1,49 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:weather_app/models/city.dart';
-import 'package:weather_app/models/forecast_day.dart';
-import 'package:weather_app/models/history_day.dart';
-import 'package:weather_app/models/weather_data.dart';
 import 'package:weather_app/repositories/weather_repository.dart';
-import 'package:weather_app/services/city_storage_service.dart';
-import 'package:weather_app/services/weather_service.dart';
 import 'package:weather_app/view_models/city_list_view_model.dart';
 
-class FakeWeatherService implements WeatherService {
-  City? cityToReturn;
-
-  @override
-  Future<City> findCity(String cityName) async {
-    if (cityToReturn == null) {
-      throw WeatherApiException('Cidade não encontrada: $cityName');
-    }
-    return cityToReturn!;
-  }
-
-  @override
-  Future<WeatherData> getCurrentWeather(String cityName) =>
-      throw UnimplementedError();
-
-  @override
-  Future<List<ForecastDay>> getForecast(String cityName, {int days = 7}) =>
-      throw UnimplementedError();
-
-  @override
-  Future<HistoryDay> getHistoryOneYearAgo(String cityName) =>
-      throw UnimplementedError();
-}
-
-class FakeCityStorageService implements CityStorageService {
-  List<City> cities = [];
-
-  @override
-  Future<List<City>> loadCities() async => cities;
-
-  @override
-  Future<void> saveCities(List<City> newCities) async {
-    cities = newCities;
-  }
-}
+import '../fakes/weather_fakes.dart';
 
 void main() {
   const santos = City(
