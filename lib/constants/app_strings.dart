@@ -1,7 +1,7 @@
 class AppStrings {
   AppStrings._();
 
-  static const appTitle = 'Climinha';
+  static const appTitle = 'Previu';
   static const emptyCityList = 'Nenhuma cidade cadastrada ainda.';
   static const addCityDialogTitle = 'Adicionar cidade';
   static const addCityHint = 'Ex: São Paulo';
