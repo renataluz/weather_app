@@ -46,6 +46,15 @@ class FakeCityStorageService implements CityStorageService {
 class FakeLocationService implements LocationService {
   @override
   Future<Coordinates> getCurrentCoordinates() async {
-    throw LocationException('Localização não disponível no teste.');
+    throw LocationException(
+      'Localização não disponível no teste.',
+      LocationErrorReason.serviceDisabled,
+    );
   }
+
+  @override
+  Future<void> openAppSettings() async {}
+
+  @override
+  Future<void> openLocationSettings() async {}
 }

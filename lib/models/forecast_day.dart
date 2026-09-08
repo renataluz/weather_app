@@ -29,8 +29,6 @@ class ForecastDay {
 
   String get displayRange => '${minTempC.round()}° / ${maxTempC.round()}°';
 
-  String get displaySubtitle => '$condition · chuva $chanceOfRain%';
-
   factory ForecastDay.fromJson(Map<String, dynamic> json) {
     final day = json['day'] as Map<String, dynamic>;
     final condition = day['condition'] as Map<String, dynamic>;

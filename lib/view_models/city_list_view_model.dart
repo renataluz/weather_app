@@ -49,13 +49,25 @@ class CityListViewModel extends StateNotifier<List<City>> {
     await _storage.saveCities(state);
   }
 
+  Future<void> restoreCity(City city) async {
+    if (state.contains(city)) return;
+    state = [...state, city];
+    await _storage.saveCities(state);
+  }
+
   Future<void> refreshWeather() async {
     _ref.invalidate(currentLocationWeatherProvider);
 
-    final refreshes = state.map((city) {
+    final refreshes = state.map((city) async {
       _weatherRepository.invalidate(city.name);
       _ref.invalidate(cityDetailProvider(city.name));
-      return _ref.refresh(weatherProvider(city.name).future);
+      try {
+        await _ref.refresh(weatherProvider(city.name).future);
+      } catch (_) {
+        // Falha esperada (ex: sem internet) — o AsyncValue do provider já
+        // guarda o erro sozinho; não deixamos isso derrubar o Future.wait
+        // e travar o gesto de pull-to-refresh.
+      }
     });
     await Future.wait(refreshes);
   }
