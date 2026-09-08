@@ -20,6 +20,13 @@ class MyApp extends StatelessWidget {
           seedColor: const Color(0xFF0284C7),
         ),
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0284C7),
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: ThemeMode.system,
       home: const CityListScreen(),
     );
   }
