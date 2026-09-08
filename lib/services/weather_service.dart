@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../constants/app_strings.dart';
 import '../env/env.dart';
@@ -24,7 +25,7 @@ class WeatherService {
       '$_baseUrl/current.json?key=${Env.weatherApiKey}&q=$cityName&lang=pt',
     );
 
-    final response = await http.get(url);
+    final response = await _get(url);
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -45,7 +46,7 @@ class WeatherService {
       '$_baseUrl/search.json?key=${Env.weatherApiKey}&q=$cityName',
     );
 
-    final response = await http.get(url);
+    final response = await _get(url);
 
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body) as List<dynamic>;
@@ -65,7 +66,7 @@ class WeatherService {
       '$_baseUrl/forecast.json?key=${Env.weatherApiKey}&q=$cityName&days=$days&lang=pt',
     );
 
-    final response = await http.get(url);
+    final response = await _get(url);
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -95,7 +96,7 @@ class WeatherService {
       '$_baseUrl/history.json?key=${Env.weatherApiKey}&q=$cityName&dt=$dateParam&lang=pt',
     );
 
-    final response = await http.get(url);
+    final response = await _get(url);
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map<String, dynamic>;
@@ -115,6 +116,16 @@ class WeatherService {
     throw WeatherApiException(
       AppStrings.errorFetchingHistory(response.statusCode),
     );
+  }
+
+  Future<http.Response> _get(Uri url) async {
+    try {
+      return await http.get(url);
+    } on SocketException {
+      throw WeatherApiException(AppStrings.networkError);
+    } catch (error) {
+      throw WeatherApiException(AppStrings.networkError);
+    }
   }
 
   String _formatDate(DateTime date) {

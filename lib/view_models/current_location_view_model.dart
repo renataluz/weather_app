@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../constants/app_strings.dart';
 import '../models/city.dart';
 import '../models/weather_data.dart';
 import '../repositories/weather_repository.dart';
@@ -28,3 +29,40 @@ final currentLocationWeatherProvider = FutureProvider<CurrentLocationData>((
 
   return CurrentLocationData(city: city, weather: weather);
 });
+
+Future<void> openLocationSettings(WidgetRef ref) {
+  return ref.read(locationServiceProvider).openLocationSettings();
+}
+
+Future<void> openAppSettings(WidgetRef ref) {
+  return ref.read(locationServiceProvider).openAppSettings();
+}
+
+class LocationCardError {
+  const LocationCardError({required this.message, this.onOpenSettings});
+
+  final String message;
+  final void Function(WidgetRef ref)? onOpenSettings;
+}
+
+LocationCardError describeLocationCardError(Object? error) {
+  if (error is! LocationException) {
+    return const LocationCardError(message: AppStrings.enableLocationPrompt);
+  }
+
+  switch (error.reason) {
+    case LocationErrorReason.serviceDisabled:
+      return LocationCardError(
+        message: error.message,
+        onOpenSettings: openLocationSettings,
+      );
+    case LocationErrorReason.permissionDenied:
+    case LocationErrorReason.permissionDeniedForever:
+      return LocationCardError(
+        message: error.message,
+        onOpenSettings: openAppSettings,
+      );
+    case LocationErrorReason.timeout:
+      return LocationCardError(message: error.message);
+  }
+}
