@@ -62,6 +62,7 @@ class CityListViewModel extends StateNotifier<List<City>> {
       _weatherRepository.invalidate(city.name);
       _ref.invalidate(cityDetailProvider(city.name));
       try {
+        // ignore: unused_result
         await _ref.refresh(weatherProvider(city.name).future);
       } catch (_) {
         // Falha esperada (ex: sem internet) — o AsyncValue do provider já
